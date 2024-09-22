@@ -1,9 +1,7 @@
-import BackgroundTimer from 'react-native-background-timer';
-
-export default function (millsecond: number) {
-    return new Promise<void>(resolve => {
-        BackgroundTimer.setTimeout(() => {
+export default function delay(milliseconds: number): Promise<void> {
+    return new Promise<void>((resolve) => {
+        setTimeout(() => {
             resolve();
-        }, millsecond);
+        }, milliseconds);
     });
 }
