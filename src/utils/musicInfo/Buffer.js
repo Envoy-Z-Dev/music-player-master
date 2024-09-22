@@ -14,9 +14,9 @@ class Buffer {
     }
 
     move(length) {
-        let start = this.cursor;
-        this.cursor = this.cursor + length > this.size ? this.size : this.cursor + length;
-        let end = this.cursor;
+        const start = this.cursor;
+        this.cursor = Math.min(this.cursor + length, this.size);
+        const end = this.cursor;
         return end - start;
     }
 
