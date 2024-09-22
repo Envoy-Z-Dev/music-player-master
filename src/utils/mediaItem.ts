@@ -7,7 +7,6 @@ import {
 import MediaMeta from '@/store/mediaExtra';
 import { produce } from 'immer';
 
-
 /** 获取mediakey */
 export function getMediaKey(mediaItem: ICommon.IMediaBase) {
     return `${mediaItem.platform}@${mediaItem.id}`;
@@ -41,7 +40,7 @@ export function isSameMediaItem(
     a: ICommon.IMediaBase | null | undefined,
     b: ICommon.IMediaBase | null | undefined,
 ) {
-    return a && b && a.id == b.id && a.platform === b.platform;
+    return a && b && a.id === b.id && a.platform === b.platform;
 }
 
 /** 查找是否存在 */
@@ -52,10 +51,11 @@ export function includesMedia(
     if (!a || !b) {
         return false;
     }
-    return a.findIndex(_ => isSameMediaItem(_, b)) !== -1;
+    return a.findIndex((_) => isSameMediaItem(_, b)) !== -1;
 }
 
 /** 获取复位的mediaItem */
+// Uncomment and adapt if needed
 // export function resetMediaItem<T extends Partial<ICommon.IMediaBase>>(
 //     mediaItem: T,
 //     platform?: string,
@@ -100,8 +100,6 @@ export enum InternalDataType {
     LOCALPATH = 'localPath',
 }
 
-
-
 export function trimInternalData(
     mediaItem: ICommon.IMediaBase | null | undefined,
 ) {
@@ -120,7 +118,7 @@ export async function associateLrc(
     linkto: ICommon.IMediaBase,
 ) {
     if (!musicItem || !linkto) {
-        throw new Error('');
+        throw new Error('Invalid music item or link');
     }
 
     // 如果相同直接断链
