@@ -1,71 +1,68 @@
-import { colors, screenPadding } from '@/constants/tokens'
-import { logError } from '@/helpers/logger'
-import myTrackPlayer from '@/helpers/trackPlayerIndex'
-import { getPlayListFromQ } from '@/helpers/userApi/getMusicSource'
-import { defaultStyles } from '@/styles'
-import { Ionicons } from '@expo/vector-icons'
-import { useHeaderHeight } from '@react-navigation/elements'
-import { router } from 'expo-router'
-import React, { useState } from 'react'
+import { colors, screenPadding } from '@/constants/tokens';
+import { logError } from '@/helpers/logger';
+import myTrackPlayer from '@/helpers/trackPlayerIndex';
+import { getPlayListFromQ } from '@/helpers/userApi/getMusicSource';
+import { defaultStyles } from '@/styles';
+import { Ionicons } from 'react-native-vector-icons/Ionicons';
+import { useHeaderHeight } from '@react-navigation/elements';
+import React, { useState } from 'react';
 import {
 	ActivityIndicator,
-	StyleSheet,
+	Alert,
 	Text,
 	TextInput,
 	TouchableOpacity,
 	View,
-} from 'react-native'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+	StyleSheet,
+} from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as DocumentPicker from 'react-native-document-picker'; // Use react-native-document-picker
 
 const ImportPlayList = () => {
-	const [playlistUrl, setPlaylistUrl] = useState('')
-	const [playlistData, setPlaylistData] = useState(null)
-	const [isLoading, setIsLoading] = useState(false)
-	const [error, setError] = useState(null)
+	const [playlistUrl, setPlaylistUrl] = useState('');
+	const [playlistData, setPlaylistData] = useState(null);
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState(null);
 
-	const headerHeight = useHeaderHeight()
-	const { top } = useSafeAreaInsets()
+	const headerHeight = useHeaderHeight();
+	const { top } = useSafeAreaInsets();
 
 	const handleImport = async () => {
-		setIsLoading(true)
-		setError(null)
+		setIsLoading(true);
+		setError(null);
 		try {
-			if (!playlistUrl.includes('id=')) throw new Error('链接格式不正确')
-			if (!playlistUrl) throw new Error('链接不能为空')
-			// 发起实际的网络请求
-			const match = playlistUrl.match(/[?&]id=(\d+)/)
-			const response = await getPlayListFromQ(match ? match[1] : null)
-			// 设置数据
-			//  console.log(JSON.stringify(response.songs)+'12312312')
-			setPlaylistData(response)
-			myTrackPlayer.addPlayLists(response as IMusic.PlayList)
-			router.dismiss()
+			if (!playlistUrl.includes('id=')) throw new Error('Invalid link format');
+			if (!playlistUrl) throw new Error('Link cannot be empty');
+
+			const match = playlistUrl.match(/[?&]id=(\d+)/);
+			const response = await getPlayListFromQ(match ? match[1] : null);
+			setPlaylistData(response);
+			myTrackPlayer.addPlayLists(response as IMusic.PlayList);
 		} catch (err) {
-			setError('导入失败，请检查链接是否正确')
-			// myTrackPlayer.deletePlayLists('7570659434')
-			logError('导入错误:', err)
+			setError('Import failed, please check if the link is correct');
+			logError('Import error:', err);
 		} finally {
-			setIsLoading(false)
+			setIsLoading(false);
 		}
-	}
+	};
 
 	const DismissPlayerSymbol = () => (
 		<View style={[styles.dismissSymbol, { top: top - 25 }]}>
 			<View style={styles.dismissBar} />
 		</View>
-	)
+	);
 
 	return (
 		<SafeAreaView style={[styles.modalContainer, { paddingTop: headerHeight }]}>
 			<DismissPlayerSymbol />
-			<Text style={styles.header}>导入歌单</Text>
+			<Text style={styles.header}>Import Playlist</Text>
 			<View style={styles.inputContainer}>
-				<Text style={styles.inputLabel}>歌单链接</Text>
+				<Text style={styles.inputLabel}>Playlist Link</Text>
 				<TextInput
 					style={styles.input}
 					value={playlistUrl}
 					onChangeText={setPlaylistUrl}
-					placeholder='🔗输入企鹅音乐歌单链接要有"id="字样'
+					placeholder='🔗 Enter the QQ Music playlist link containing "id="'
 					placeholderTextColor="#999"
 					autoCapitalize="none"
 					autoCorrect={false}
@@ -83,101 +80,88 @@ const ImportPlayList = () => {
 					) : (
 						<>
 							<Ionicons name={'enter-outline'} size={24} color={colors.primary} />
-							<Text style={styles.buttonText}>导入</Text>
+							<Text style={styles.buttonText}>Import</Text>
 						</>
-					)}
-				</TouchableOpacity>
-			</View>
-			{error && <Text style={styles.error}>{error}</Text>}
-			{playlistData && (
-				<Text style={styles.successText}>导入成功! 歌单名称: {playlistData.name}</Text>
-			)}
-		</SafeAreaView>
-	)
-}
+				 )}
+			 </TouchableOpacity>
+		 </View>
+		 {error && <Text style={styles.error}>{error}</Text>}
+		 {playlistData && (
+			 <Text style={styles.successText}>Import successful! Playlist name: {playlistData.name}</Text>
+		 )}
+	  </SafeAreaView>
+   );
+};
 
 const styles = StyleSheet.create({
 	modalContainer: {
-		...defaultStyles.container,
+		flex: 1,
 		paddingHorizontal: screenPadding.horizontal,
-	},
+        backgroundColor: defaultStyles.container.backgroundColor,
+    },
 	buttonContainer: {
-		marginTop: 0,
-	},
+        marginTop: 0,
+    },
 	dismissSymbol: {
-		position: 'absolute',
-		left: 0,
-		right: 0,
-		flexDirection: 'row',
-		justifyContent: 'center',
-		zIndex: 1,
-	},
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        zIndex: 1,
+    },
 	dismissBar: {
-		width: 50,
-		height: 5,
-		borderRadius: 2.5,
-		backgroundColor: '#c7c7cc',
-	},
+        width: 50,
+        height: 5,
+        borderRadius: 2.5,
+        backgroundColor: '#c7c7cc',
+    },
 	inputContainer: {
-		marginBottom: 20,
-	},
+        marginBottom: 20,
+    },
 	inputLabel: {
-		fontSize: 16,
-		fontWeight: '600',
-		color: '#000',
-		marginBottom: 8,
-	},
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#000',
+        marginBottom: 8,
+    },
 	header: {
-		fontSize: 31,
-		fontWeight: 'bold',
-		padding: 0,
-		paddingTop: 5,
-		color: colors.text,
-	},
+        fontSize: 31,
+        fontWeight: 'bold',
+        paddingTop: 5,
+        color: colors.text,
+    },
 	input: {
-		height: 44,
-		backgroundColor: '#1C1C1F',
-		borderRadius: 10,
-		paddingHorizontal: 16,
-		fontSize: 17,
-		color: '#999',
-	},
-	importButton: {
-		backgroundColor: '#007aff',
-		borderRadius: 10,
-		height: 44,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	importButtonText: {
-		color: '#fff',
-		fontSize: 17,
-		fontWeight: '600',
-	},
-	error: {
-		color: '#ff3b30',
-		marginTop: 10,
-	},
-	successText: {
-		color: '#34c759',
-		marginTop: 10,
-	},
+        height: 44,
+        backgroundColor: '#1C1C1F',
+        borderRadius: 10,
+        paddingHorizontal: 16,
+        fontSize: 17,
+        color: '#999',
+    },
 	button: {
-		padding: 12,
-		backgroundColor: 'rgba(47, 47, 47, 0.5)',
-		borderRadius: 8,
-		flexDirection: 'row',
-		justifyContent: 'center',
-		alignItems: 'center',
-		columnGap: 8,
-	},
-	buttonText: {
-		...defaultStyles.text,
-		color: colors.primary,
-		fontWeight: '600',
-		fontSize: 18,
-		textAlign: 'center',
-	},
-})
+        padding: 12,
+        backgroundColor: 'rgba(47, 47, 47, 0.5)',
+        borderRadius: 8,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+	buttonText:{
+       ...defaultStyles.text,
+       color: colors.primary,
+       fontWeight:'600',
+       fontSize:'18',
+       textAlign:'center'
+    },
+	error:{
+       color:'#ff3b30',
+       marginTop:'10'
+    },
+	successText:{
+       color:'#34c759',
+       marginTop:'10'
+    }
+});
 
-export default ImportPlayList
+export default ImportPlayList;
