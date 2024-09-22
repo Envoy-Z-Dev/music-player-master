@@ -1,59 +1,62 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 
 export default class StateMapper<T> {
-	private getFun: () => T
-	private cbs: Set<Function> = new Set([])
+	private getFun: () => T;
+	private cbs: Set<Function> = new Set([]);
+
 	constructor(getFun: () => T) {
-		this.getFun = getFun
+		this.getFun = getFun;
 	}
 
 	notify = () => {
-		this.cbs.forEach((_) => _?.())
+		this.cbs.forEach((cb) => cb?.());
 	}
 
 	useMappedState = () => {
-		const [_state, _setState] = useState<T>(this.getFun)
+		const [_state, _setState] = useState<T>(this.getFun);
 		const updateState = () => {
-			_setState(this.getFun())
-		}
+			_setState(this.getFun());
+		};
+
 		useEffect(() => {
-			this.cbs.add(updateState)
+			this.cbs.add(updateState);
 			return () => {
-				this.cbs.delete(updateState)
-			}
-		}, [])
-		return _state
+				this.cbs.delete(updateState);
+			};
+		}, []);
+
+		return _state;
 	}
 }
 
-type UpdateFunc<T> = (prev: T) => T
+type UpdateFunc<T> = (prev: T) => T;
 
 export class GlobalState<T> {
-	private value: T
-	private stateMapper: StateMapper<T>
+	private value: T;
+	private stateMapper: StateMapper<T>;
 
 	constructor(initValue: T) {
-		this.value = initValue
-		this.stateMapper = new StateMapper(this.getValue)
+		this.value = initValue;
+		this.stateMapper = new StateMapper(this.getValue);
 	}
 
 	public getValue = () => {
-		return this.value
+		return this.value;
 	}
 
 	public useValue = () => {
-		return this.stateMapper.useMappedState()
+		return this.stateMapper.useMappedState();
 	}
 
 	public setValue = (value: T | UpdateFunc<T>) => {
-		let newValue: T
+		let newValue: T;
 		if (typeof value === 'function') {
-			newValue = (value as UpdateFunc<T>)(this.value)
+			newValue = (value as UpdateFunc<T>)(this.value);
 		} else {
-			newValue = value
+			newValue = value;
 		}
 
-		this.value = newValue
-		this.stateMapper.notify()
+		this.value = newValue;
+		this.stateMapper.notify();
 	}
 }
