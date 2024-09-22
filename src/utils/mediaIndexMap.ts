@@ -10,13 +10,13 @@ export function createMediaIndexMap(
     const indexMap: Record<string, Record<string, number>> = {};
 
     mediaItems.forEach((item, index) => {
-        // 映射中不存在
+        // If the platform does not exist in the map
         if (!indexMap[item.platform]) {
             indexMap[item.platform] = {
                 [item.id]: index,
             };
         } else {
-            // 修改映射
+            // Update the mapping
             indexMap[item.platform][item.id] = index;
         }
     });
@@ -37,7 +37,7 @@ export function createMediaIndexMap(
             return false;
         }
 
-        return indexMap[mediaItem.platform]?.[mediaItem.id] > -1;
+        return indexMap[mediaItem.platform]?.[mediaItem.id] !== undefined;
     }
 
     return {
