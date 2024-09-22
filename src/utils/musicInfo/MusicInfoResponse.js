@@ -1,5 +1,3 @@
-// src/utils/musicInfo/MusicInfoResponse.js
-
 class MusicInfoResponse {
     constructor() {
         this.title = '';
