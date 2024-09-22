@@ -1,4 +1,4 @@
-export default function <T = any>(raw?: string) {
+export default function safeParse<T = any>(raw?: string): T | null {
     try {
         if (!raw) {
             return null;
