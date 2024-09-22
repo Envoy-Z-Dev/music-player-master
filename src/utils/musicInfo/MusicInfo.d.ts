@@ -1,25 +1,26 @@
 declare class MusicInfo {
-	static getMusicInfoAsync(fileUri: string, options?: MusicInfoOptions): Promise<MusicInfoResponse?>
+    static getMusicInfoAsync(fileUri: string, options?: MusicInfoOptions): Promise<MusicInfoResponse | null>;
 }
 
 export declare class MusicInfoOptions {
-	title?: boolean
-	artist?: boolean
-	album?: boolean
-	genre?: boolean
-	picture?: boolean
+    title?: boolean;
+    artist?: boolean;
+    album?: boolean;
+    genre?: boolean;
+    picture?: boolean;
 }
 
 export declare class MusicInfoResponse {
-	title?: string
-	artist?: string
-	album?: string
-	genre?: string
-	picture?: Picture
+    title?: string;
+    artist?: string;
+    album?: string;
+    genre?: string;
+    picture?: Picture;
 }
 
 export declare class Picture {
-	description: string
-	pictureData: string
+    description: string;
+    pictureData: string;
 }
-export default MusicInfo
+
+export default MusicInfo;
