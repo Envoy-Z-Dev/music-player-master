@@ -1,70 +1,65 @@
-import { PlaylistsListModal } from '@/components/PlaylistsListModal'
-import { screenPadding } from '@/constants/tokens'
-import myTrackPlayer from '@/helpers/trackPlayerIndex'
-import { useFavorites } from '@/store/library'
-import { defaultStyles } from '@/styles'
-import { useHeaderHeight } from '@react-navigation/elements'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Alert, StyleSheet } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Track } from 'react-native-track-player'
+import { PlaylistsListModal } from '@/components/PlaylistsListModal';
+import { screenPadding } from '@/constants/tokens';
+import myTrackPlayer from '@/helpers/trackPlayerIndex';
+import { useFavorites } from '@/store/library';
+import { defaultStyles } from '@/styles';
+import { useHeaderHeight } from '@react-navigation/elements';
+import { useNavigation, useRoute } from '@react-navigation/native'; // Use react-navigation for navigation
+import { Alert, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Track } from 'react-native-track-player';
 
 const AddToPlaylistModal = () => {
-	const router = useRouter()
-	const params = useLocalSearchParams()
+	const navigation = useNavigation();
+	const route = useRoute();
 
 	const track: IMusic.IMusicItem = {
-		title: params.title as string,
-		album: params.album as string,
-		artwork: params.artwork as string,
-		artist: params.artist as string,
-		// 根据需要添加其他必要的属性，可能需要设置默认值
-		id: params.id as string, // 如果需要 id，可能需要另外生成
-		url: (params.url as string) || 'Unknown',
-		platform: (params.platform as string) || 'tx',
-		duration: typeof params.duration === 'string' ? parseInt(params.duration, 10) : 0,
-	}
-	const headerHeight = useHeaderHeight()
+		title: route.params.title as string,
+		album: route.params.album as string,
+		artwork: route.params.artwork as string,
+		artist: route.params.artist as string,
+		id: route.params.id as string,
+		url: (route.params.url as string) || 'Unknown',
+		platform: (route.params.platform as string) || 'tx',
+		duration: typeof route.params.duration === 'string' ? parseInt(route.params.duration, 10) : 0,
+	};
 
-	const { favorites, toggleTrackFavorite } = useFavorites()
-	// track was not found
+	const headerHeight = useHeaderHeight();
+
+	const { favorites, toggleTrackFavorite } = useFavorites();
+
 	if (!track) {
-		return null
+		return null;
 	}
 
 	const handlePlaylistPress = async (playlist: IMusic.PlayList) => {
-		// console.log('playlist', playlist)
 		if (playlist.id === 'favorites') {
 			if (favorites.find((item) => item.id === track.id)) {
-				console.log('已收藏')
+				console.log('Already favorited');
 			} else {
-				toggleTrackFavorite(track as Track)
+				toggleTrackFavorite(track as Track);
 			}
 		} else {
-			myTrackPlayer.addSongToStoredPlayList(playlist, track)
+			myTrackPlayer.addSongToStoredPlayList(playlist, track);
 		}
-		// should close the modal
-		router.dismiss()
-		Alert.alert('成功', '添加成功')
 
-		// if the current queue is the playlist we're adding to, add the track at the end of the queue
-		// if (activeQueueId?.startsWith(playlist.name)) {
-		// 	await TrackPlayer.add(track)
-		// }
-	}
+		navigation.goBack();
+		Alert.alert('Success', 'Added successfully');
+	};
 
 	return (
 		<SafeAreaView style={[styles.modalContainer, { paddingTop: headerHeight }]}>
 			<PlaylistsListModal onPlaylistPress={handlePlaylistPress} />
 		</SafeAreaView>
-	)
-}
+	);
+};
 
 const styles = StyleSheet.create({
 	modalContainer: {
-		...defaultStyles.container,
+		flex: 1,
 		paddingHorizontal: screenPadding.horizontal,
+		backgroundColor: defaultStyles.container.backgroundColor,
 	},
-})
+});
 
-export default AddToPlaylistModal
+export default AddToPlaylistModal;
