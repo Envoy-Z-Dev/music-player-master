@@ -1,14 +1,17 @@
-import { FloatingPlayer } from '@/components/FloatingPlayer'
-import { colors, fontSize } from '@/constants/tokens'
-import { FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
-import { BlurView } from 'expo-blur'
-import { Tabs } from 'expo-router'
-import { StyleSheet } from 'react-native'
+import { FloatingPlayer } from '@/components/FloatingPlayer';
+import { colors, fontSize } from '@/constants/tokens';
+import { FontAwesome, Ionicons, MaterialCommunityIcons } from 'react-native-vector-icons';
+import { StyleSheet } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import { BlurView } from '@react-native-community/blur'; // Use react-native-community/blur for BlurView
+
+const Tab = createBottomTabNavigator();
 
 const TabsNavigation = () => {
 	return (
-		<>
-			<Tabs
+		<NavigationContainer>
+			<Tab.Navigator
 				screenOptions={{
 					tabBarActiveTintColor: colors.primary,
 					tabBarLabelStyle: {
@@ -25,18 +28,19 @@ const TabsNavigation = () => {
 					},
 					tabBarBackground: () => (
 						<BlurView
-							intensity={90}
 							style={{
-								...StyleSheet.absoluteFillObject, //相当于position: 'absolute', left: 0, right: 0, top: 0, bottom: 0
+								...StyleSheet.absoluteFillObject,
 								overflow: 'hidden',
 								borderTopLeftRadius: 20,
 								borderTopRightRadius: 20,
 							}}
+							blurType="light" // Adjust blur type as needed
+							blurAmount={10} // Adjust blur amount as needed
 						/>
 					),
 				}}
 			>
-				<Tabs.Screen
+				<Tab.Screen
 					name="(songs)"
 					options={{
 						title: 'Songs',
@@ -45,21 +49,21 @@ const TabsNavigation = () => {
 						),
 					}}
 				/>
-				<Tabs.Screen
+				<Tab.Screen
 					name="radio"
 					options={{
 						title: 'Radio',
 						tabBarIcon: ({ color }) => <Ionicons name="radio" size={24} color={color} />,
 					}}
 				/>
-				<Tabs.Screen
+				<Tab.Screen
 					name="favorites"
 					options={{
 						title: 'Favorites',
-						tabBarIcon: ({ color }) => <FontAwesome name="heart" size={20} color={color} />, //当你定义 tabBarIcon 时，React Navigation 会自动传递一些参数给你，其中包括 color、focused 和 size。这些参数会根据当前 Tab 的选中状态和主题来动态变化。
+						tabBarIcon: ({ color }) => <FontAwesome name="heart" size={20} color={color} />,
 					}}
 				/>
-				<Tabs.Screen
+				<Tab.Screen
 					name="search"
 					options={{
 						title: 'Search',
@@ -68,7 +72,7 @@ const TabsNavigation = () => {
 						),
 					}}
 				/>
-			</Tabs>
+			</Tab.Navigator>
 
 			<FloatingPlayer
 				style={{
@@ -78,8 +82,8 @@ const TabsNavigation = () => {
 					bottom: 78,
 				}}
 			/>
-		</>
-	)
-}
+		</NavigationContainer>
+	);
+};
 
-export default TabsNavigation
+export default TabsNavigation;
